@@ -1,4 +1,7 @@
-const range = +process.argv[2];
+const range = {
+    from: +process.argv[2],
+    to: +process.argv[3]
+};
 const arr = [];
 const colors = require("colors/safe");
 /**
@@ -13,31 +16,37 @@ function isPrime(n) {
     return true;
 }
 
-if (isNaN(range)) {
-    console.log("Введите число");
+if (isNaN(range.from) || isNaN(range.to)) {
+    console.log("Введите диапазон в виде двух чисел");
 }
-if (range <= 0) {
-    console.log("Введите положительное число");
+if (range.from <= 0 || range.to <= range.from) {
+    console.log("Диапазон чисел должен быть от m до n, где n и m > 1 и при этом n > m");
 } else {
     // Заполнение массива простыми числами
-    for (let i = 2; i <= range; i++) {
+    for (let i = range.from; i <= range.to; i++) {
         if (isPrime(i)) {
             arr.push(i);
         }
     }
-    //  выводим на экран полученный массив, и подсвечиваем каждую цифру 
-    //  определенным цветом
-    for (let i = 0; i < arr.length; i++) {
-        let color = 'red';
-        if (i === 0 || i % 3 === 0) {
-            color = "green"
-        }
-        if (i === 2 || i % 3 === 2) {
-            color = "yellow"
-        }
 
-        console.log(colors[color](arr[i]));
+    if (arr.length === 0) {
+        console.log("В данном диапазоне нет простых чисел")
+    } else {
+        //  выводим на экран полученный массив, и подсвечиваем каждую цифру 
+        //  определенным цветом
+        for (let i = 0; i < arr.length; i++) {
+            let color = 'red';
+            if (i === 0 || i % 3 === 0) {
+                color = "green"
+            }
+            if (i === 2 || i % 3 === 2) {
+                color = "yellow"
+            }
+
+            console.log(colors[color](arr[i]));
+        }
     }
+
 }
 
 
