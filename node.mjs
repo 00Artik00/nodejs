@@ -1,17 +1,34 @@
 import EventEmitter from "events";
 const emmiter = new class extends EventEmitter { };
-const date = process.argv[2];
-
+const userDate = process.argv[2];
+function getTime({ hour, day, month, year }) {
+    return hour * 60 + day * 1440 + month * 43_200 + year * 525_600
+}
 class Handler {
-    static set(payload) {
-        /// основной код
-        console.log("Текущая дата: " + payload);
+    static set(userDate) {
+        const newDate = new Date();
+        const currentDateObj = {
+            hour: newDate.getHours(),
+            day: newDate.getDate(),
+            month: newDate.getMonth() + 1,
+            year: newDate.getFullYear()
+        }
+        const currentDateStr = `${currentDateObj.hour}-${currentDateObj.day}-${currentDateObj.month}-${currentDateObj.year}`;
+
+        const userDateArr = userDate.split("-");
+        const userDateObj = {
+            hour: +userDateArr[0],
+            day: +userDateArr[1],
+            month: +userDateArr[2],
+            year: +userDateArr[3]
+        }
+        console.log(getTime(currentDateObj) > getTime(userDateObj));
     }
 }
-emmiter.on('setTimer', (date) => Handler.set(date));
+emmiter.on('setTimer', (userDate) => Handler.set(userDate));
 
-if (/([0-23]+\-[1-31]+\-[1-12]+\-\d{0,4})/.test(date)) {
-    emmiter.emit('setTimer', date);
+if (/([0-2][0-4]\-[0-3][0-9]\-[0-1][0-9]\-[0-9][0-9][0-9][0-9])/.test(userDate)) {
+    emmiter.emit('setTimer', userDate);
 } else {
     console.log("Incorect date. Please write date in this type: 'hour-day-month-year'");
 }
