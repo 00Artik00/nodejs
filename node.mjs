@@ -1,34 +1,67 @@
 import EventEmitter from "events";
+import dayjs from 'dayjs';
+import { getSystemErrorMap } from "util";
 const emmiter = new class extends EventEmitter { };
-const userDate = process.argv[2];
-function getTime({ hour, day, month, year }) {
-    return hour * 60 + day * 1440 + month * 43_200 + year * 525_600
+const userDate = dayjs(new Date(process.argv[2] + ":43:00"));
+function getTime(currentDate) {
+    const currentTime = currentDate.format('YYYY-MM-DD[T]HH:mm:ss[+03:00]');
+    const userTime = userDate.format('YYYY-MM-DD[T]HH:mm:ss[+03:00]');
+    const time = (new Date(userTime).getTime() - new Date(currentTime).getTime()) / 1000;
+    return time;
 }
+function timer(currentDate) {
+    let time = getTime(currentDate);
+
+    let day = Math.trunc(time / 86_400);
+    let hour = Math.trunc((time - day * 86_400) / 3600);
+    let minute = Math.trunc((time - day * 86_400 - hour * 3_600) / 60);
+    let second = time - day * 86_400 - hour * 3_600 - minute * 60;
+
+    let timer = setInterval(() => {
+        if (time === 1) {
+            clearInterval(timer);
+        }
+        time--;
+        second--;
+        console.clear();
+        console.log(`${day} day ${hour} hour ${minute} minute ${second} second`);
+
+
+        if (second === 0) {
+            second = 60;
+            minute--;
+        }
+        if (minute === 0) {
+            minute = 59;
+            hour--;
+        }
+        if (hour === 0) {
+            hour = 23;
+            day--;
+        }
+
+    }, 1000)
+}
+
 class Handler {
     static set(userDate) {
-        const newDate = new Date();
-        const currentDateObj = {
-            hour: newDate.getHours(),
-            day: newDate.getDate(),
-            month: newDate.getMonth() + 1,
-            year: newDate.getFullYear()
-        }
-        const currentDateStr = `${currentDateObj.hour}-${currentDateObj.day}-${currentDateObj.month}-${currentDateObj.year}`;
+        let currentDate = dayjs();
 
-        const userDateArr = userDate.split("-");
-        const userDateObj = {
-            hour: +userDateArr[0],
-            day: +userDateArr[1],
-            month: +userDateArr[2],
-            year: +userDateArr[3]
+        if (currentDate.isSame(userDate)) {
+            console.log('Таймер истек');
         }
-        console.log(getTime(currentDateObj) > getTime(userDateObj));
+        if (currentDate.isAfter(userDate)) {
+            console.log('Таймер истек');
+        }
+        if (currentDate.isBefore(userDate)) {
+            timer(currentDate)
+        }
     }
 }
 emmiter.on('setTimer', (userDate) => Handler.set(userDate));
 
-if (/([0-2][0-4]\-[0-3][0-9]\-[0-1][0-9]\-[0-9][0-9][0-9][0-9])/.test(userDate)) {
+if (userDate.isValid()) {
     emmiter.emit('setTimer', userDate);
 } else {
-    console.log("Incorect date. Please write date in this type: 'hour-day-month-year'");
+    console.log("Incorect date. Please write date in this type: 'year-month-day:hour'");
 }
