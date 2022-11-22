@@ -4,7 +4,7 @@ const emmiter = new class extends EventEmitter { };
 
 //Так как в задание не было сказано про минуты и секунды, принудительно выставляю
 // их в ноль
-const userDate = dayjs(new Date(process.argv[2] + ":00:00"));
+const userDate = dayjs(new Date(process.argv[2] + ":23:00"));
 
 /**
  * Функция для получения получения времени в секундах между пользовательским вре-
@@ -44,17 +44,21 @@ function timer(currentDate) {
         console.log(`${day} day ${hour} hour ${minute} minute ${second} second`);
 
 
-        if (second === 0) {
+        if (second === 0 && minute != 0) {
             second = 60;
             minute--;
         }
-        if (minute === 0) {
+        if (minute === 0 && hour != 0) {
             minute = 59;
             hour--;
         }
-        if (hour === 0) {
+        if (hour === 0 && day != 0) {
             hour = 23;
             day--;
+        }
+        if (day + hour + minute + second === 0) {
+            console.clear();
+            console.log('Таймер истек');
         }
 
     }, 1000)
