@@ -6,25 +6,23 @@ import fs from "fs"
 import readline from "readline";
 import path from "path";
 import inquirer from "inquirer";
-import { stdout } from "process";
+
 
 const options = yargs(hideBin(process.argv))
     .usage("Usage: -p <path>")
     .option("p", {
         alias: "path", describe: "Path to file", type: "string",
     })
-    .option("s", {
-        alias: "search", describe: "Search in the file", type: "string",
-    })
     .argv;
 
 
-
+// Преобразовываем путь до искомого файла или директории. Если не передать путь,
+// то за точку отсчета будет взята текущая директория
 let userPath = options.path
-    ? path.join(process.cwd(), options.path)
+    ? path.join(options.path)
     : path.join(process.cwd());
 
-
+// Функция для чтения директории, если выбрать подкаталог, то получаем его внутренности
 const readdir = async (pathToFile) => {
     return fsp
         .readdir(pathToFile)
@@ -49,7 +47,9 @@ const readdir = async (pathToFile) => {
         })
 
 }
-
+// Функция для чтения файла. Первый выбор: если выбрать что не хотим вводить фразу
+// для поиска, то получим сразу текст файла иначе получим команду ввести фразу для
+// поиска по файлу
 const readFl = async (pathToFile) => {
 
     return inquirer
@@ -65,15 +65,8 @@ const readFl = async (pathToFile) => {
                     output: process.stdout
                 });
                 rl.question("Please enter phrase to search in the file: ", async function (search) {
-                    const result = searchPhrase(pathToFile, search, rl);
-                    if (!result) {
-                        console.log('nothing found')
-                    }
-
+                    searchPhrase(pathToFile, search, rl);
                 });
-
-
-
             }
             else {
                 fsp.readFile(pathToFile, 'utf-8').then(console.log)
@@ -83,18 +76,15 @@ const readFl = async (pathToFile) => {
 
 
 }
-
+// Функция для поиска строк в файле, в которых есть заданная пользователем подстрока
 const searchPhrase = (pathToFile, search, rl) => {
 
     const readInterface = readline.createInterface({
         input: fs.createReadStream(pathToFile),
 
     });
-    let somethingFound = false;
-
     readInterface.on('line', function (line) {
         if (line.includes(search)) {
-            somethingFound = true;
             console.log(line)
         }
     });
@@ -103,10 +93,11 @@ const searchPhrase = (pathToFile, search, rl) => {
     rl.on("close", function () {
         process.exit(0);
     });
-    return somethingFound;
 }
-// Основной код
+
+// Запуск программы
 const userSrc = await fsp.stat(userPath);
+// Проверяем, что нужно прочитать файл или директорию
 userSrc.isFile()
     ? readFl(userPath)
     : await readdir(userPath);
