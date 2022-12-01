@@ -1,0 +1,30 @@
+{
+  "name": "nodejs",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "bin": {
+    "reader": "cli.js"
+  },
+  "scripts": {
+    "start": "node cli.js",
+    "test": "node testCli.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/00Artik00/nodejs.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/00Artik00/nodejs/issues"
+  },
+  "homepage": "https://github.com/00Artik00/nodejs#readme",
+  "dependencies": {
+    "inquirer": "^9.1.4",
+    "node-cmd": "^5.0.0"
+  },
+  "keywords": [],
+  "description": "",
+  "devDependencies": {}
+}
