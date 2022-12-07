@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Cli in browser</title>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"
+        integrity="sha384-/KNQL8Nu5gCHLqwqfQjA689Hhoqgi2S84SNUxC3roTe4EhJ9AfLkp8QiQcU8AMzI"
+        crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <ul>
+        <div class="users">Текущее колличество пользователей: <span class="userCount"></span></div>
+        #filelinks#
+    </ul>
+    <script type="text/javascript">
+        const socket = io('localhost:3000');
+
+        const addMessage = (count) => {
+
+            document.querySelector('.userCount').innerHTML = count;
+
+            console.log(count)
+        };
+
+        socket.on('connect', () => {
+            console.log('Connection with localhost:3000 created');
+        })
+        socket.on('ADD_CONN_EVENT', (count) => {
+            addMessage(count);
+        })
+        socket.on('SUB_DISCONN_EVENT', (count) => {
+            addMessage(count);
+        })
+
+
+
+
+
+
+
+
+    </script>
+</body>
+
+</html>

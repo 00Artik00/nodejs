@@ -25,6 +25,7 @@
     socket.on('connect', () => {
         console.log('Connection with localhost:3000 created');
     })
+
     // socket.on('disconnect', () => {
     //     console.log('disconnect with localhost:3000');
     // });
@@ -33,6 +34,9 @@
         addMessage(data.msg)
     })
     socket.on('NEW_CONN_EVENT', function (data) {
+        addMessage(data.msg);
+    });
+    socket.on('NEW_DISCONN_EVENT', function (data) {
         addMessage(data.msg);
     });
 
@@ -47,6 +51,7 @@
             socket.emit('client-msg', { msg: text })
             document.getElementById('input').value = '';
         }
+
 
 </script>
 
